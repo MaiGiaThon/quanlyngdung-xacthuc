@@ -1,11 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
 </head>
 <body>
 <h1>Login</h1>
-
+<form method="post" action="#" th:action="login" th:object="${loginrequest}">
+    Email: <input type="text" th:field="*{email}">
+    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+    <br/><br/>
+    Password: <input type="password" th:field="*{pass}">
+    <div th:if="${#fields.hasErrors('pass')}" th:errors="*{pass}"></div>
+    <br/><br/>
+    <button type="submit">Login</button>
+</form>
 </body>
 </html>
