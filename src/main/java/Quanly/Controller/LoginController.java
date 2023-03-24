@@ -1,11 +1,17 @@
 package Quanly.Controller;
 
+import Quanly.DTO.UserDTO;
 import Quanly.Exception.UserException;
+import Quanly.Model.User;
 import Quanly.Request.LoginRequest;
+import Quanly.Service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/")
 public class LoginController {
+    @Autowired UserService userService;
     @GetMapping
     public String Homepage(){
         return "index";
@@ -25,11 +32,29 @@ public class LoginController {
         return "login";
     }
     @PostMapping("login")
-    public  String handleLogin(@Valid @ModelAttribute("loginrequest") LoginRequest loginRequest, BindingResult result){
+    public  String handleLogin(@Valid @ModelAttribute("loginrequest") LoginRequest loginRequest, BindingResult result, HttpSession session){
         if(result.hasErrors()){
             return "login";
         }
-        return "redirect:/";
+        User user;
+        try{
+            user = userService.login(loginRequest.email(), loginRequest.pass());
+            session.setAttribute("user", new UserDTO(user.getId(), user.getFullname(), user.getEmail()));
+            return "redirect:/";
+        }catch ( UserException ex){
+            switch (ex.getMessage()){
+                case "User is not found!":
+                    result.addError(new FieldError("loginrequest", "email", "Email does not exist!"));
+                    break;
+                case "User is not Activated!":
+                    result.addError(new FieldError("loginrequest", "email", "User is not Activated!"));
+                    break;
+                case "Password is incorrect!":
+                    result.addError(new FieldError("loginrequest", "pass", "Password is incorrect!"));
+                    break;
+            }
+            return "login";
+        }
     }
 
     @GetMapping("register")

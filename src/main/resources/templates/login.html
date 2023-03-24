@@ -11,10 +11,10 @@
 <h1>Login</h1>
 <form method="post" action="#" th:action="login" th:object="${loginrequest}">
     Email: <input type="text" th:field="*{email}">
-    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
     <br/><br/>
     Password: <input type="password" th:field="*{pass}">
-    <div th:if="${#fields.hasErrors('pass')}" th:errors="*{pass}"></div>
+    <span th:if="${#fields.hasErrors('pass')}" th:errors="*{pass}"></span>
     <br/><br/>
     <button type="submit">Login</button>
 </form>
