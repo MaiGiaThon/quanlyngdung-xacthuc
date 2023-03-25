@@ -21,8 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/")
 public class LoginController {
     @Autowired UserService userService;
+
     @GetMapping
-    public String Homepage(){
+    public String Homepage(Model model, HttpSession session){
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO != null){
+            model.addAttribute("user", userDTO);
+        }
         return "index";
     }
 
@@ -57,9 +62,23 @@ public class LoginController {
         }
     }
 
+    @GetMapping("logout")
+    public String logout(HttpSession session){
+        session.removeAttribute("user");
+        return "redirect:/";
+    }
+
     @GetMapping("register")
     public String showRegister(){
         return "register";
+    }
+
+    @GetMapping("admin")
+    public String showAdmin(Model model, HttpSession session){
+        UserDTO userDTO = (UserDTO) session.getAttribute("user");
+        if (userDTO != null){
+            return "admin";
+        }else return "redirect:/";
     }
 
     @GetMapping("foo")
